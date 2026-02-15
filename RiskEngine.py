@@ -6,21 +6,10 @@ from typing import List, Dict, Tuple
 import seaborn as sns
 
 class MarkovRiskEngine:
-    """
-    A Markov Chain-based risk engine for quantitative analysis
-    """
+
     
     def __init__(self, states: List[str], transition_matrix: np.ndarray):
-        """
-        Initialize the Markov Risk Engine
-        
-        Parameters:
-        -----------
-        states : List[str]
-            List of state names
-        transition_matrix : np.ndarray
-            Transition probability matrix (n x n)
-        """
+
         self.states = states
         self.n_states = len(states)
         self.transition_matrix = np.array(transition_matrix)
@@ -29,7 +18,7 @@ class MarkovRiskEngine:
         self._validate_transition_matrix()
         
     def _validate_transition_matrix(self):
-        """Ensure transition matrix is valid (rows sum to 1)"""
+        
         if self.transition_matrix.shape != (self.n_states, self.n_states):
             raise ValueError("Transition matrix dimensions don't match number of states")
         
@@ -38,13 +27,7 @@ class MarkovRiskEngine:
             raise ValueError("Transition matrix rows must sum to 1")
     
     def steady_state(self) -> np.ndarray:
-        """
-        Calculate steady-state (equilibrium) distribution
         
-        Returns:
-        --------
-        np.ndarray : Steady-state probability distribution
-        """
         eigenvalues, eigenvectors = np.linalg.eig(self.transition_matrix.T)
         
         # Find eigenvector corresponding to eigenvalue 1
@@ -55,37 +38,11 @@ class MarkovRiskEngine:
         return steady_state
     
     def n_step_transition(self, n: int) -> np.ndarray:
-        """
-        Calculate n-step transition matrix
         
-        Parameters:
-        -----------
-        n : int
-            Number of steps
-            
-        Returns:
-        --------
-        np.ndarray : n-step transition matrix
-        """
         return np.linalg.matrix_power(self.transition_matrix, n)
     
     def simulate_path(self, initial_state: int, n_steps: int, n_simulations: int = 1) -> np.ndarray:
-        """
-        Simulate Markov chain paths
         
-        Parameters:
-        -----------
-        initial_state : int
-            Starting state index
-        n_steps : int
-            Number of time steps
-        n_simulations : int
-            Number of simulation paths
-            
-        Returns:
-        --------
-        np.ndarray : Simulated paths (n_simulations x n_steps)
-        """
         paths = np.zeros((n_simulations, n_steps), dtype=int)
         paths[:, 0] = initial_state
         
@@ -104,26 +61,7 @@ class MarkovRiskEngine:
     def calculate_var(self, initial_state: int, loss_values: np.ndarray, 
                       n_steps: int, confidence_level: float = 0.95, 
                       n_simulations: int = 10000) -> Dict:
-        """
-        Calculate Value at Risk using Monte Carlo simulation
         
-        Parameters:
-        -----------
-        initial_state : int
-            Starting state
-        loss_values : np.ndarray
-            Loss associated with each state
-        n_steps : int
-            Time horizon
-        confidence_level : float
-            Confidence level for VaR (default 0.95)
-        n_simulations : int
-            Number of Monte Carlo simulations
-            
-        Returns:
-        --------
-        Dict : VaR metrics including VaR, CVaR, and loss distribution
-        """
         # Simulate paths
         paths = self.simulate_path(initial_state, n_steps, n_simulations)
         
@@ -148,18 +86,7 @@ class MarkovRiskEngine:
         }
     
     def expected_time_to_absorption(self, absorbing_states: List[int]) -> np.ndarray:
-        """
-        Calculate expected time to reach absorbing states
         
-        Parameters:
-        -----------
-        absorbing_states : List[int]
-            Indices of absorbing states
-            
-        Returns:
-        --------
-        np.ndarray : Expected time to absorption from each transient state
-        """
         # Separate transient and absorbing states
         transient_states = [i for i in range(self.n_states) if i not in absorbing_states]
         
@@ -194,7 +121,7 @@ class MarkovRiskEngine:
     
     def visualize_state_evolution(self, initial_distribution: np.ndarray, 
                                    n_steps: int, figsize: Tuple = (12, 6)):
-        """Visualize how state probabilities evolve over time"""
+        
         evolution = np.zeros((n_steps, self.n_states))
         evolution[0] = initial_distribution
         
@@ -216,10 +143,7 @@ class MarkovRiskEngine:
 
 # Example Usage: Credit Risk Model
 def credit_risk_example():
-    """
-    Example: Credit rating transition model
-    States: AAA, AA, A, BBB, BB, B, CCC, Default
-    """
+    
     
     # Define states
     states = ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC', 'Default']
